@@ -7,7 +7,7 @@ In this table the user's credentials will be stored.
 **CREDENTIAL**
 
 | Attribute | Type     | Description
-| :------------- | :------------- |
+| :------------- | :------------- |:------------- |
 | userID    | String | Automatically generated ID by the Portal for a particular user (We are using Java's UUID).
 | userName  | String | Unique username for every user.
 | email     | String | Email id of the user.
@@ -27,7 +27,7 @@ After registering he will get a `clientID` and `clientSecret` which he can use t
 **CLIENT**
 
 | Attribute | Type | Description
-| :------------- | :------------- |
+| :------------- | :------------- |:------------- |
 | clientID  | String | Unique ID assigned to the application after registration
 | clientSecret | String | clientSecret provided to the application
 | scope | Array | scope let you specify exactly what type of access you need. Clients could not grant any additional permission beyond that which the user already has.
@@ -40,7 +40,7 @@ After registering he will get a `clientID` and `clientSecret` which he can use t
 **CLIENTINFO**
 
 | Attribute | Type | Description
-| :------------- | :------------- |
+| :------------- | :------------- |:------------- |
 | clientID | String       | Unique identity provided to each client
 | clientName | String | Name of the client service/application
 | scopes | Array | Array of required scopes to use this service/application
@@ -54,7 +54,7 @@ After registering he will get a `clientID` and `clientSecret` which he can use t
 **AUTHORIZATION**
 
 | Attribute | Type | Description
-| :------------- | :------------- |
+| :------------- | :------------- |:------------- |
 | userID       | String | Unique identity of each user
 | clientID    | String | Unique identity of each client service
 | accessToken | String | Token which develoer can use to access user information
@@ -67,7 +67,7 @@ This table stores the data for temporary time. After certain period of time, the
 **TEMPORARY**
 
 | Attribute  | Type | Description
-| :------------- | :------------- |
+| :------------- | :------------- |:------------- |
 | userID | String | User ID
 | clientID | String | Client ID of the service/application
 | accessToken | String | Token a developer can use to access user information on behalf of user
