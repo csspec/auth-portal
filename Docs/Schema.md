@@ -7,6 +7,7 @@ In this table the information about user's credentials will be stored.
 **CREDENTIAL**
 
 | Attribute | Type     | Description
+<<<<<<< HEAD
 | :------------- | :------------- | :-------------|
 | userID    | String | automatically generated ID by the Portal for a particular user (We are using Java's UUID)
 | userName  | String | unique username of every user.
@@ -14,6 +15,15 @@ In this table the information about user's credentials will be stored.
 | accessLevel | Integer | access level of the user. It is the value which represents how much access the user has over database and services. It is a integer ranging from 0-10 (0 means most priority and 10 means lowest priority)
 | passwordHash | String | hash of the password generated after applying salt.
 | salt  | String | salt value used
+=======
+| :------------- | :------------- |:------------- |
+| userID    | String | Automatically generated ID by the Portal for a particular user (We are using Java's UUID).
+| userName  | String | Unique username for every user.
+| email     | String | Email id of the user.
+| accessLevel | Integer | Access level of the user. It is the value which represents how much access the user has over database and services. It is a integer ranging from 0-10 (0 means most priority and 10 means lowest priority).
+| passwordHash | String | Hash of the password generated after applying salt.
+| salt  | String | Salt value used.
+>>>>>>> f75901a... [Docs] Update Schema.md
 
 ### Client Table
 **NOTE**: Here client refers to another application or service (e.g. Feedback, etc.)
@@ -27,7 +37,11 @@ After registering he will get a `ClientID` and `ClientSecret` which he can use t
 **CLIENT**
 
 | Attribute | Type | Description
+<<<<<<< HEAD
 | :------------- | :------------- | :-------------|
+=======
+| :------------- | :------------- |:------------- |
+>>>>>>> f75901a... [Docs] Update Schema.md
 | clientID  | String | Unique ID assigned to the application after registration
 | clientSecret | String | clientSecret provided to the application
 | scope | Array | Scope let you specify exactly what type of access you need. Clients could not grant any additional permission beyond that which the user already has.
@@ -40,7 +54,7 @@ After registering he will get a `ClientID` and `ClientSecret` which he can use t
 **CLIENTINFO**
 
 | Attribute | Type | Description
-| :------------- | :------------- | :----------------|
+| :------------- | :------------- |:------------- |
 | clientID | String       | Unique identity provided to each client
 | clientName | String | Name of the client service/application
 | scopes | Array | Array of required scopes to use this service/application
@@ -54,7 +68,7 @@ After registering he will get a `ClientID` and `ClientSecret` which he can use t
 **AUTHORIZATION**
 
 | Attribute | Type | Description
-| :------------- | :------------- | :-----------------|
+| :------------- | :------------- |:------------- |
 | userID       | String | Unique identity of each user
 | clientID    | String | Unique identity of each client service
 | accessToken | String | Token which develoer can use to access user information
@@ -67,7 +81,7 @@ This table stores the data for temporary time. After certain period of time, the
 **TEMPORARY**
 
 | Attribute  | Type | Description
-| :------------- | :------------- | :----------------|
+| :------------- | :------------- |:------------- |
 | userID | String | User ID
 | clientID | String | Client ID of the service/application
 | accessToken | String | Token a developer can use to access user information on behalf of user
