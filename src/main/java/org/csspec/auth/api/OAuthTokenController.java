@@ -169,6 +169,10 @@ public class OAuthTokenController {
      * <strong>Some required parameters along with the request</strong>
      * As described in validateAndGetClient method's javadoc except that client_secret is required
      *
+     * The access_token issued to the client should lie in HTTP Authorization header as
+     * <code>
+     *     Authorization: Bearer YOUR_ACCESS_TOKEN
+     * </code>
      * @param entity
      * @return
      */
