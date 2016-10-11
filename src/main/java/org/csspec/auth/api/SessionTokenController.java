@@ -9,11 +9,9 @@ import org.csspec.auth.db.repositories.UserAccountRepository;
 import org.csspec.auth.db.schema.Account;
 import org.csspec.auth.db.schema.UserRole;
 import org.csspec.auth.exceptions.ErrorResponse;
-import org.csspec.auth.exceptions.HttpForbiddenResponse;
 import org.csspec.auth.exceptions.InsufficientRoleException;
 import org.csspec.auth.exceptions.InvalidUsernameOrPasswordException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -21,9 +19,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.HttpCookie;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
