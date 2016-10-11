@@ -26,6 +26,8 @@ public class ClientApplication {
 
     private Integer accessTokenValiditySeconds;
 
+    private String uri = "";
+
     private Set<String> scope = new HashSet<>();
 
     private Set<String> registeredRedirectUri = new HashSet<>();
@@ -157,5 +159,23 @@ public class ClientApplication {
 
     public void setAllowedServices(Collection<String> allowedServices) {
         this.allowedServices = allowedServices;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof ClientApplication)) {
+            return false;
+        }
+        ClientApplication other = (ClientApplication)object;
+        return this.getClientId().equals(other.getClientId())
+                && this.getClientSecret().equals(other.getClientSecret());
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }
