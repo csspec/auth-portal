@@ -19,11 +19,12 @@ public class CodeIssuer {
     }
 
     private String generateCode(ClientApplication application, List<String> services) {
+        /*
+        generates a five digit code and encodes it into base64
+         */
         return UUIDGenerator.toBase64(UUIDGenerator.getRandomUUID()).substring(0, 5);
     }
 
-    /* TODO: Instead of storing account id we should use better way like storing the services which the client was requesting
-     */
     public String issue(ClientApplication application, List<String> services) {
         String code = generateCode(application, services);
         repository.save(new Code(application.getClientId(), services, code));
@@ -36,4 +37,11 @@ public class CodeIssuer {
         return code != null;
     }
 
+    /**
+     * remove the code
+     * @param codeStr issued code string
+     */
+    public void removeIfValid(String codeStr, ClientApplication application) {
+        repository.delete(repository.findCodeByCodeAndClientId(codeStr, application.getClientId()));
+    }
 }
