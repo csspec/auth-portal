@@ -1,17 +1,23 @@
 package org.csspec.auth.api;
 
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.csspec.auth.URIQueryParser;
 import org.csspec.auth.config.JwtConfiguration;
 import org.csspec.auth.db.schema.ClientApplication;
 import org.csspec.auth.db.services.ClientApplicationDetailService;
 import org.csspec.auth.db.services.CodeIssuer;
 import org.csspec.auth.exceptions.ErrorResponse;
+import org.csspec.auth.exceptions.InsufficientAuthorizationException;
+import org.csspec.auth.exceptions.InvalidAuthorizationTokenException;
+import org.csspec.auth.exceptions.UnknownClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -28,11 +34,13 @@ public class OAuthTokenController {
 
     private ClientApplicationDetailService clientService;
     private CodeIssuer codeIssuer;
+    private RequestApproval requestApproval;
 
     @Autowired
-    public OAuthTokenController(ClientApplicationDetailService clientService, CodeIssuer codeIssuer) {
+    public OAuthTokenController(ClientApplicationDetailService clientService, CodeIssuer codeIssuer, RequestApproval requestApproval) {
         this.clientService = clientService;
         this.codeIssuer = codeIssuer;
+        this.requestApproval = requestApproval;
     }
     /**
      * returns the validated client which has the required authority as requested.
@@ -114,10 +122,10 @@ public class OAuthTokenController {
     }
 
     @RequestMapping("/issue_code")
-    public ResponseEntity<?> issueCode(RequestEntity<?> entity) {
+    public ResponseEntity<?> issueCode(RequestEntity<?> entity) throws Exception {
         ClientApplication application = validateAndGetClient(entity, false, false);
         if (application == null)
-            return new ResponseEntity<>(new ErrorResponse(403, "Bad credentials"), HttpStatus.FORBIDDEN);
+            throw new InsufficientAuthorizationException();
 
         Map<String, Object> map = new HashMap<>();
         map.put("code", codeIssuer.issue(application, new ArrayList<>()));
@@ -130,10 +138,10 @@ public class OAuthTokenController {
      * @return a token which can be used to access the service
      */
     @RequestMapping("/access_token")
-    public ResponseEntity<?> getAccessToken(RequestEntity<?> entity) {
+    public ResponseEntity<?> getAccessToken(RequestEntity<?> entity) throws Exception {
         ClientApplication application = validateAndGetClient(entity, true, true);
         if (application == null) {
-            return new ResponseEntity<>(new ErrorResponse(403, "Bad credentials"), HttpStatus.FORBIDDEN);
+            throw new InsufficientAuthorizationException();
         }
         final StringBuilder scope = new StringBuilder();
         application.getAllowedServices().forEach(name -> scope.append(name + " "));
@@ -173,32 +181,33 @@ public class OAuthTokenController {
      * <code>
      *     Authorization: Bearer YOUR_ACCESS_TOKEN
      * </code>
-     * @param entity
-     * @return
      */
     @RequestMapping("/check_token")
-    public ResponseEntity<?> checkAccessToken(RequestEntity<?> entity) {
+    public ResponseEntity<?> checkAccessToken(HttpServletRequest request, RequestEntity<?> entity) throws Exception {
         ClientApplication application = validateAndGetClient(entity, true, false);
         if (application == null) {
-            return new ResponseEntity<>(new ErrorResponse(403, "Bad credentials"), HttpStatus.FORBIDDEN);
+            throw new InsufficientAuthorizationException();
         }
 
-        String jwt = parseAuthorizationHeader(entity);
-        if (jwt == null)
-            return new ResponseEntity<>(new ErrorResponse(403, "Bad credentials"), HttpStatus.FORBIDDEN);
-        Map<String, Object> claims;
-        try {
-             claims = JwtConfiguration.getClaims(jwt);
-        } catch (Exception e) {
-            return new ResponseEntity<>(new ErrorResponse(403, "Bad authorization header"), HttpStatus.FORBIDDEN);
-        }
-
-        Map<String, Object> details = new HashMap<>();
-        String claimedId = (String)claims.get("sub");
-
-        if (claimedId == null || !application.getClientId().equals(claimedId))
-            return new ResponseEntity<>(new ErrorResponse(403, "Bad client"), HttpStatus.FORBIDDEN);
-
+        requestApproval.approveRequestFromClient(request, application);
         return new ResponseEntity<>(application, HttpStatus.OK);
+    }
+
+
+    @ExceptionHandler(InsufficientAuthorizationException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse insufficientAuthorizationException(InsufficientAuthorizationException exception) {
+        return new ErrorResponse(403, exception.toString());
+    }
+
+    @ExceptionHandler(UnknownClientException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse unknownClientExceptionHandler(UnknownClientException exception) {
+        return new ErrorResponse(403, exception.toString());
+    }
+
+    @ExceptionHandler(InvalidAuthorizationTokenException.class)
+    public ErrorResponse invalidAuthorizationTokenExceptionHandler(InvalidAuthorizationTokenException exception) {
+        return new ErrorResponse(403, exception.toString());
     }
 }
