@@ -10,8 +10,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
+    private UserAccountRepository repository;
+
     @Autowired
-    UserAccountRepository repository;
+    AccountController(UserAccountRepository repository) {
+        this.repository = repository;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Account> getAllAccounts() {
