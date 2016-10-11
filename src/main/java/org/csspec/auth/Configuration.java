@@ -75,4 +75,6 @@ public class Configuration {
         String clientSecret = env.get(THIS_CLIENT_SECRET);
         return clientSecret == null ? askThisClientSecret() : clientSecret;
     }
+
+    public static final String CSS_ORG_COOKIE_NAME = "csspec_org";
 }
