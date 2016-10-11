@@ -10,12 +10,14 @@ import org.csspec.auth.db.services.ClientApplicationDetailService;
 import org.csspec.auth.exceptions.InsufficientRoleException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.authentication.rememberme.InvalidCookieException;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.Cookie;
 
 /**
  * request approving routines
  */
+@Component
 public class RequestApproval {
     private AuthUserService service;
 
@@ -55,7 +57,7 @@ public class RequestApproval {
         if (account == null) {
             throw new InvalidCookieException("Invalid cookie");
         }
-        if (account.getRole().getRole() < role.getRole()) {
+        if (account.getRole().getRole() > role.getRole()) {
             throw new InsufficientRoleException(account, role);
         }
         return account;
