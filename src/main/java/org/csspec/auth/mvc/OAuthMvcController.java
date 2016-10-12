@@ -1,9 +1,18 @@
 package org.csspec.auth.mvc;
 
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import org.csspec.auth.db.repositories.ClientApplicationRepository;
+import org.csspec.auth.db.schema.ClientApplication;
+import org.csspec.auth.db.services.ClientApplicationDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * All the UI needed for accessing the OAuth token
@@ -34,11 +43,39 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/oauth")
 public class OAuthMvcController {
+    private ClientApplicationDetailService service;
+
+    @Autowired
+    private OAuthMvcController(ClientApplicationDetailService service) {
+        this.service = service;
+    }
+
     @RequestMapping("/authorize")
-    public String authorize(Model model, @RequestParam(name = "redirect_uri", defaultValue = "/home") String redirect_uri,
-                            @RequestParam(name="client_id", required = true) String client_id) {
-        model.addAttribute("redirect_to", redirect_uri);
+    public String authorize(Model model, @RequestParam(name = "redirect_uri", required = false) String redirect_uri,
+                            @RequestParam(name="client_id", required = true) String client_id,
+                            @RequestParam(name="grant_type", defaultValue = "code") String grant_type,
+                            HttpServletRequest request,
+                            HttpServletResponse response) {
+        String registeredRedirectUri = null;
         model.addAttribute("client_id", client_id);
+        try {
+            ClientApplication application = service.loadClientByClientId(client_id);
+            if (redirect_uri == null) {
+                Set<String> uris = application.getRegisteredRedirectUri();
+                assert uris != null && uris.size() != 0;
+                Iterator<String> stringIterator= uris.iterator();
+                if (stringIterator.hasNext()) {
+                    registeredRedirectUri = stringIterator.next();
+                }
+            } else {
+                registeredRedirectUri = redirect_uri;
+            }
+        } catch (Exception e) {
+            System.out.println("Unknown client tried to login client_id=" + client_id);
+            return "unknown_client";
+        }
+        model.addAttribute("redirect_to", redirect_uri);
+        model.addAttribute("grant_type", grant_type);
         return "login";
     }
 }

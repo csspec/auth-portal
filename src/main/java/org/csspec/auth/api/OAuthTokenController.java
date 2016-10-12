@@ -6,10 +6,8 @@ import org.csspec.auth.config.JwtConfiguration;
 import org.csspec.auth.db.schema.ClientApplication;
 import org.csspec.auth.db.services.ClientApplicationDetailService;
 import org.csspec.auth.db.services.CodeIssuer;
-import org.csspec.auth.exceptions.ErrorResponse;
-import org.csspec.auth.exceptions.InsufficientAuthorizationException;
-import org.csspec.auth.exceptions.InvalidAuthorizationTokenException;
-import org.csspec.auth.exceptions.UnknownClientException;
+import org.csspec.auth.exceptions.*;
+import org.csspec.auth.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -138,8 +136,29 @@ public class OAuthTokenController {
      * @return a token which can be used to access the service
      */
     @RequestMapping("/access_token")
-    public ResponseEntity<?> getAccessToken(RequestEntity<?> entity) throws Exception {
-        ClientApplication application = validateAndGetClient(entity, true, true);
+    public ResponseEntity<?> getAccessToken(RequestEntity<?> entity, HttpServletRequest request) throws Exception {
+        String xAuthHeader = request.getHeader("x-auth-token");
+        String []params = xAuthHeader.split("&");
+
+        String grantType = "code";
+        if (params.length >= 2) {
+            for (String param : params) {
+                if (param.startsWith("grant_type")) {
+                    String[] pair = param.split("=");
+                    if (pair.length <= 1) {
+                        throw new InvalidGrantTypeException();
+                    }
+                    grantType = pair[1];
+                }
+            }
+        }
+
+        if (!grantType.equals("code") && !grantType.equals("implicit"))
+            throw new InvalidGrantTypeException();
+
+        boolean state = grantType.equals("code");
+        System.out.println(state);
+        ClientApplication application = validateAndGetClient(entity, state, state);
         if (application == null) {
             throw new InsufficientAuthorizationException();
         }
@@ -151,23 +170,8 @@ public class OAuthTokenController {
         map.put("access_token", jwt);
 
         // TODO::= we have to add the expiry time of the token also.
+        // for implicit flow it should be small
         return new ResponseEntity<Object>(map, HttpStatus.OK);
-    }
-
-    private String parseAuthorizationHeader(RequestEntity<?> entity) {
-        List<String> auths = entity.getHeaders().get("Authorization");
-        if (auths == null)
-            return null;
-
-        String authToken = auths.get(0);
-        if (!authToken.trim().startsWith("Bearer "))
-            return null;
-
-        String []strings = authToken.split(" ");
-        if (strings.length <= 1)
-            return null;
-
-        return strings[1];
     }
 
     /**
@@ -208,6 +212,12 @@ public class OAuthTokenController {
 
     @ExceptionHandler(InvalidAuthorizationTokenException.class)
     public ErrorResponse invalidAuthorizationTokenExceptionHandler(InvalidAuthorizationTokenException exception) {
+        return new ErrorResponse(403, exception.toString());
+    }
+
+    @ExceptionHandler(InvalidGrantTypeException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse invalidGrantTypeExceptionHandler(InvalidGrantTypeException exception) {
         return new ErrorResponse(403, exception.toString());
     }
 }
