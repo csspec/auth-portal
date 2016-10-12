@@ -1,6 +1,6 @@
 import $ from 'jquery';
-import LoginForm from '../LoginForm/LoginForm';
 import Loading from '../Loading/Loading';
+import LoginLink from '../LoginWall/LoginLink';
 import Home from '../Home/Home';
 import React from 'react';
 
@@ -54,8 +54,9 @@ export default class MainPage extends React.Component {
                 <Home account={this.state.account} />
             );
         } else {
+            // redirect user to login page
             return (
-                <LoginForm />
+                <LoginLink />
             )
         }
 

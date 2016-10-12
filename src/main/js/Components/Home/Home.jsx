@@ -30,8 +30,8 @@ export default class Home extends React.Component {
     render() {
         return (
             <div className="homepage">
-                <h1>Hello {this.props.account.username}</h1>
-                <button onClick={this.handleClick} disabled={this.state.disabled}>{this.state.event}</button>
+                <h1 className="header">Hello {this.props.account.username}</h1>
+                <button className="btn btn-primary" onClick={this.handleClick} disabled={this.state.disabled}>{this.state.event}</button>
             </div>
         )
     }

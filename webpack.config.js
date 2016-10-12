@@ -7,7 +7,8 @@ const APP_DIR = path.resolve(__dirname, 'src/main/js');
 const config = {
 	entry: {
 		index: APP_DIR + '/index.jsx',
-		login: APP_DIR + '/login.jsx'
+		signin: APP_DIR + '/signin.jsx',
+		admin: APP_DIR + '/admin.jsx'
 	},
 	output: {
 		path: BUILD_DIR,
