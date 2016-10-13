@@ -53,7 +53,7 @@ public class OAuthMvcController {
     @RequestMapping("/authorize")
     public String authorize(Model model, @RequestParam(name = "redirect_uri", required = false) String redirect_uri,
                             @RequestParam(name="client_id", required = true) String client_id,
-                            @RequestParam(name="grant_type", defaultValue = "code") String grant_type,
+                            @RequestParam(name="response_type", defaultValue = "code") String response_type,
                             HttpServletRequest request,
                             HttpServletResponse response) {
         String registeredRedirectUri = null;
@@ -74,8 +74,8 @@ public class OAuthMvcController {
             System.out.println("Unknown client tried to login client_id=" + client_id);
             return "unknown_client";
         }
-        model.addAttribute("redirect_to", redirect_uri);
-        model.addAttribute("grant_type", grant_type);
+        model.addAttribute("redirect_to", registeredRedirectUri);
+        model.addAttribute("response_type", response_type);
         return "login";
     }
 }

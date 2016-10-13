@@ -66,14 +66,14 @@ export default class LoginForm extends React.Component {
         if (this.state.client_id.length === 0)
             window.location = '/home';
 
-        // TODO: since grant_type will not be limited to just 'implicit' and 'code'
-        const request_endpoint = window.grant_type === 'code' ? 'issue_code' : 'access_token';
+        // TODO: since grant_type will not be limited to just 'token' and 'code'
+        const request_endpoint = window.response_type === 'code' ? 'issue_code' : 'access_token';
         $.ajax({
             url: '/oauth/' + request_endpoint,
             type: 'GET',
             beforeSend: (request) => {
                 let header = "client_id=" + this.state.client_id;
-                header += '&grant_type=' + window.grant_type;
+                header += '&response_type=' + window.response_type;
                 request.setRequestHeader('x-auth-token', header);
             },
             success: (data) => {

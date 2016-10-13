@@ -1,5 +1,24 @@
-# Webflow for client applications
+# Two types of webflow
+Auth portal supports two types of webflow
 
+ + [Implicit flow](#implicit-flow)
+ + [Authorization Code based flow](#auth-code-flow)
+
+### Implicit Webflow for browser side applications <a id="implicit-flow"></a>
+#### 1) Client redirects user to /oauth/authorize for authorization with following parameters
+
+| Parameter | Type | Description |
+|-----------| -----|-------------|
+| `client_id` | `String` | **Required**. client_id is one that is issued to the application while registration |
+| `grant_type` | `String` | **Required**. value of this parameter should be `implicit` |
+| `services` | `String` | **Optional**. Space separated list of services which application want to access. Note application cannot access the service for which it has not registered. If this parameter is not provided, then the services will default to those that were listed in registration form. |
+| `redirect_uri` | `String` | **Optional**. Uri to which user will be redirected after completing the authorization |
+
+#### 2) Authorization Portal sends `access_token` as hash fragment to the `redirect_uri`
+After the user has accepted the client's request, then `access_token` can be received from the [hash fragment](https://en.wikipedia.org/wiki/Fragment_identifier) of `redirect_uri`.
+
+
+### Authorization code based webflow for server side applications <a id="auth-code-flow"></a>
 #### 1) Client calls /oauth/authorize for authorization with following parameters
 
 | Parameter | Type | Description |
@@ -51,3 +70,9 @@ $ set AUTH_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2Nzc3
 $ curl -H "Authorization: Bearer $AUTH_TOKEN" -H "x-auth-token:client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET" AUTH_BASE_URL/oauth/check_token
 
 ```
+
+## References: 
+ [1] http://stackoverflow.com/questions/13387698/why-is-there-an-authorization-code-flow-in-oauth2-when-implicit-flow-works-s
+ [2] https://tools.ietf.org/html/rfc6749
+ [3] https://aaronparecki.com/articles/2012/07/29/1/oauth2-simplified
+ [4] Issue [#4](https://github.com/csspec/auth-portal/issues/4)

@@ -140,23 +140,23 @@ public class OAuthTokenController {
         String xAuthHeader = request.getHeader("x-auth-token");
         String []params = xAuthHeader.split("&");
 
-        String grantType = "code";
+        String responseType = "code";
         if (params.length >= 2) {
             for (String param : params) {
-                if (param.startsWith("grant_type")) {
+                if (param.startsWith("response_type")) {
                     String[] pair = param.split("=");
                     if (pair.length <= 1) {
                         throw new InvalidGrantTypeException();
                     }
-                    grantType = pair[1];
+                    responseType = pair[1];
                 }
             }
         }
 
-        if (!grantType.equals("code") && !grantType.equals("implicit"))
+        if (!responseType.equals("code") && !responseType.equals("token"))
             throw new InvalidGrantTypeException();
 
-        boolean state = grantType.equals("code");
+        boolean state = responseType.equals("code");
         System.out.println(state);
         ClientApplication application = validateAndGetClient(entity, state, state);
         if (application == null) {
