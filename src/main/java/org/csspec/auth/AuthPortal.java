@@ -40,5 +40,11 @@ public class AuthPortal implements CommandLineRunner {
         application.setClientId(configuration.getThisClientId());
         application.setClientSecret(configuration.getThisClientSecret());
         repository.save(application);
+
+        // create a feedback application client
+        application = new ClientApplication();
+        application.setClientId("feedback");
+        application.setClientSecret("simple");
+        repository.save(application);
     }
 }
