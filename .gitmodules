@@ -1,6 +1,3 @@
-[submodule "src/web/sass/bootstrap-sass"]
-	path = src/web/sass/bootstrap-sass
-	url = https://github.com/csspec/bootstrap-sass
 [submodule "src/main/web/sass/bootstrap-sass"]
 	path = src/main/web/sass/bootstrap-sass
 	url = https://github.com/csspec/bootstrap-sass
