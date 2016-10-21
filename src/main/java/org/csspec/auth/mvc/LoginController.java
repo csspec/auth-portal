@@ -2,6 +2,7 @@ package org.csspec.auth.mvc;
 
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.csspec.auth.api.RequestApproval;
+import org.csspec.auth.db.schema.Account;
 import org.csspec.auth.db.schema.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,12 +27,18 @@ public class LoginController {
     @RequestMapping("/home")
     public String home(Model model, HttpServletRequest request) {
         try {
-            requestApproval.approveRequest(request, UserRole.ADMIN);
+            Account account = requestApproval.approveRequest(request, UserRole.ADMIN);
             System.out.println("Admin was logged in");
         } catch (Exception e) {
+            System.out.println(e);
             return "index";
         }
-        return "admin";
+        return "admin_template";
+    }
+
+    @RequestMapping("/admin")
+    public String adminPage(Model model, HttpServletRequest request) {
+        return "admin_template";
     }
 
     @RequestMapping("/login")

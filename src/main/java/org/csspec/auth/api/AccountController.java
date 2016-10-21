@@ -24,7 +24,7 @@ public class AccountController {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Account> getAllAccounts(HttpServletRequest request) throws Exception {
-        requestApproval.approveRequest(request, UserRole.TEACHER);
+        requestApproval.approveRequest(request, UserRole.UNKNOWN);
         return repository.findAll();
     }
 

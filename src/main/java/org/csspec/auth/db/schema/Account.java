@@ -24,7 +24,6 @@ public class Account {
     @JsonIgnore
     private String password;
 
-    @JsonIgnore
     private UserRole role = UserRole.UNKNOWN;
 
     @JsonIgnore
