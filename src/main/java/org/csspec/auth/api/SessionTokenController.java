@@ -71,7 +71,7 @@ public class SessionTokenController {
 
         // get account if it exists
         Account validAccount = accountRepository.findUserByName(username);
-        if (validAccount == null || !validAccount.getPassword().equals(password)) {
+        if (validAccount == null || !AccountController.passwordEncoder.matches(password, validAccount.getPassword())) {
             return new ResponseEntity<Object>(new ErrorResponse(403, "wrong credentials"), HttpStatus.FORBIDDEN);
         }
 
@@ -79,8 +79,7 @@ public class SessionTokenController {
         HttpHeaders headers = new HttpHeaders();
         Date expire = new Date();
         expire.setTime(expire.getTime() + 24 * 3600 * 1000);
-        System.out.println(expire.toGMTString());
-        headers.add("Set-Cookie", "csspec_org=" + token + "; expires=" + expire.toGMTString());
+        headers.add("Set-Cookie", "csspec_org=" + token + "; expires=" + expire.toGMTString() + "; Path=/");
         return new ResponseEntity<Object>(headers, HttpStatus.ACCEPTED);
     }
 
@@ -94,7 +93,7 @@ public class SessionTokenController {
     @RequestMapping("/logout")
     public ResponseEntity<?> logout(RequestEntity entity) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Set-Cookie", Configuration.CSS_ORG_COOKIE_NAME + "=");
+        headers.add("Set-Cookie", Configuration.CSS_ORG_COOKIE_NAME + "=; Path=/");
         return new ResponseEntity<Object>(headers, HttpStatus.OK);
     }
 

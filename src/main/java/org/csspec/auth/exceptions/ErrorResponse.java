@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ErrorResponse {
 
-    @JsonProperty("error_code")
+    @JsonProperty("code")
     private int code;
 
     private String message;

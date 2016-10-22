@@ -11,13 +11,11 @@ export default class Home extends React.Component {
         this.handleClick = this.handleClick.bind(this);
     }
     handleClick() {
-        console.log("Logging out " + this.props.account.username);
-
         $.ajax({
             url: '/auth/logout',
             type: 'GET',
             success: (data) => {
-                document.dispatchEvent(new Event('try-again'))
+                window.location = '/login'
             },
             error: (error) => {
                 console.log(error);
@@ -30,8 +28,7 @@ export default class Home extends React.Component {
     render() {
         return (
             <div className="homepage">
-                <h1 className="header">Hello {this.props.account.username}</h1>
-                <button className="btn btn-primary" onClick={this.handleClick} disabled={this.state.disabled}>{this.state.event}</button>
+                <button className="btn btn-danger" onClick={this.handleClick} disabled={this.state.disabled}>{this.state.event}</button>
             </div>
         )
     }

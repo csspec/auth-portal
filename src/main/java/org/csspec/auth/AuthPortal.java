@@ -1,5 +1,6 @@
 package org.csspec.auth;
 
+import org.csspec.auth.api.AccountController;
 import org.csspec.auth.db.repositories.ClientApplicationRepository;
 import org.csspec.auth.db.repositories.UserAccountRepository;
 import org.csspec.auth.db.schema.Account;
@@ -30,6 +31,7 @@ public class AuthPortal implements CommandLineRunner {
 
         String adminAccountName = configuration.getAdminAccountId();
         String adminPassword = configuration.getAdminPassword();
+        adminPassword = AccountController.passwordEncoder.encode(adminPassword);
         String adminEmail = configuration.getAccountEmail();
 
         Account admin = new Account(adminAccountName, adminEmail, adminPassword);
@@ -39,6 +41,12 @@ public class AuthPortal implements CommandLineRunner {
         ClientApplication application = new ClientApplication();
         application.setClientId(configuration.getThisClientId());
         application.setClientSecret(configuration.getThisClientSecret());
+        repository.save(application);
+
+        // create a feedback application client
+        application = new ClientApplication();
+        application.setClientId("feedback");
+        application.setClientSecret("simple");
         repository.save(application);
     }
 }

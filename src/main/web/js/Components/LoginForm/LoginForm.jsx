@@ -43,7 +43,7 @@ export default class LoginForm extends React.Component {
         };
     }
 
-    componentDidMount() {
+    checkAccount() {
         $.ajax({
             url: '/auth/check',
             method: 'GET',
@@ -56,35 +56,14 @@ export default class LoginForm extends React.Component {
         });
     }
 
+    componentDidMount() {
+        this.checkAccount();
+    }
+
     onChange(value, e) {
         var nextState = {};
         nextState[value] = e.target.value;
         this.setState(nextState);
-    }
-
-    redirectHandler(data) {
-        if (this.state.client_id.length === 0)
-            window.location = '/home';
-
-        // TODO: since grant_type will not be limited to just 'token' and 'code'
-        const request_endpoint = window.response_type === 'code' ? 'issue_code' : 'access_token';
-        $.ajax({
-            url: '/oauth/' + request_endpoint,
-            type: 'GET',
-            beforeSend: (request) => {
-                let header = "client_id=" + this.state.client_id;
-                header += '&response_type=' + window.response_type;
-                request.setRequestHeader('x-auth-token', header);
-            },
-            success: (data) => {
-                // will redirect the user to the actual link
-                window.location = this.state.redirect_link.length === 0 ? '/home' : (this.state.redirect_link
-                                        + "#" + (data.code != null ? data.code : data.access_token));
-            },
-            error: () => {
-                this.setState({ unsatisfiedRequest: true, loading: false });
-            }
-        });
     }
 
     handleSubmit(e) {
@@ -96,7 +75,7 @@ export default class LoginForm extends React.Component {
                 request.setRequestHeader("Authorization",
                     "Basic " + btoa(this.state.name + ':' + this.state.password));
             },
-            success: this.redirectHandler.bind(this),
+            success: this.checkAccount.bind(this),
             error: () => {
                 this.setState({ wrongDetailsFilled: true, loading: false });
             }
@@ -105,9 +84,12 @@ export default class LoginForm extends React.Component {
 
     render() {
         if (!this.state.loading && this.state.loggedIn && !this.state.unsatisfiedRequest) {
-            this.redirectHandler();
             return (
-                <LoggedInAs account={this.state.account} link={this.state.redirect_link} />
+                <LoggedInAs account={this.state.account}
+                            link={this.state.redirect_link}
+                            redirect_link={this.state.redirect_link}
+                            client_id={this.state.client_id}
+                />
             )
         }
 
@@ -142,6 +124,8 @@ export default class LoginForm extends React.Component {
                         </div>
                     </div>
                     <button className="btn btn-primary" type="submit">Submit</button>
+                    <small style={{display: 'block', margin: '1em'}}>OR</small>
+                    <button className="btn btn-default" onClick={(e) => (e.preventDefault(), window.dispatchEvent(new Event('togglePage')))}>Register</button>
                 </fieldset>
             </form>
         );

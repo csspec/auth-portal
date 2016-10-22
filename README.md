@@ -1,6 +1,8 @@
 # auth-portal
 Central Authentication plus Authorization Portal for PEC University of Technology.
 
+The main aim of this project is automation and digitalization of day-to-day work of college, which are at present done manually. We aim to build a central authorization service which can be scaled and will help in development of various other modules to be made under PEC Automation and Digitalization initiative.
+
 Authorization portal is based on OAuth 2.0 framework (Not all features are supported till now).
 
 ### Building

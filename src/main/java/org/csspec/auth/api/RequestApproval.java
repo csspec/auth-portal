@@ -45,8 +45,16 @@ public class RequestApproval {
     }
 
     public Account approveRequest(HttpServletRequest request, UserRole role) throws Exception {
+        if (role == UserRole.UNKNOWN) {
+            return new Account();
+        }
+
         Cookie[] cookies = request.getCookies();
         String cookiePayload = "";
+
+        if (cookies == null) {
+            throw new InvalidCookieException("Cookie empty");
+        }
         for (Cookie cookie :
                 cookies) {
             if (cookie.getName().equals(Configuration.CSS_ORG_COOKIE_NAME)) {
