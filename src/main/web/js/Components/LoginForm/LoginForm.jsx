@@ -124,6 +124,8 @@ export default class LoginForm extends React.Component {
                         </div>
                     </div>
                     <button className="btn btn-primary" type="submit">Submit</button>
+                    <small style={{display: 'block', margin: '1em'}}>OR</small>
+                    <button className="btn btn-default" onClick={(e) => (e.preventDefault(), window.dispatchEvent(new Event('togglePage')))}>Register</button>
                 </fieldset>
             </form>
         );

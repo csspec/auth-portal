@@ -1,10 +1,13 @@
 import ReactDOM from 'react-dom';
 import React, { Component } from 'react';
+import AdminConsole from './Components/AdminConsole';
+
+import '../sass/common.sass';
 
 class AdminApp extends Component {
     render() {
         return (
-            <h1>This is admin page. Only accessible to admin</h1>
+            <AdminConsole />
         )
     }
 }
