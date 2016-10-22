@@ -7,15 +7,6 @@ In this table the information about user's credentials will be stored.
 **CREDENTIAL**
 
 | Attribute | Type     | Description
-<<<<<<< HEAD
-| :------------- | :------------- | :-------------|
-| userID    | String | automatically generated ID by the Portal for a particular user (We are using Java's UUID)
-| userName  | String | unique username of every user.
-| email     | String | email id of the user
-| accessLevel | Integer | access level of the user. It is the value which represents how much access the user has over database and services. It is a integer ranging from 0-10 (0 means most priority and 10 means lowest priority)
-| passwordHash | String | hash of the password generated after applying salt.
-| salt  | String | salt value used
-=======
 | :------------- | :------------- |:------------- |
 | userID    | String | Automatically generated ID by the Portal for a particular user (We are using Java's UUID).
 | userName  | String | Unique username for every user.
@@ -23,7 +14,6 @@ In this table the information about user's credentials will be stored.
 | accessLevel | Integer | Access level of the user. It is the value which represents how much access the user has over database and services. It is a integer ranging from 0-10 (0 means most priority and 10 means lowest priority).
 | passwordHash | String | Hash of the password generated after applying salt.
 | salt  | String | Salt value used.
->>>>>>> f75901a... [Docs] Update Schema.md
 
 ### Client Table
 **NOTE**: Here client refers to another application or service (e.g. Feedback, etc.)
@@ -37,11 +27,7 @@ After registering he will get a `ClientID` and `ClientSecret` which he can use t
 **CLIENT**
 
 | Attribute | Type | Description
-<<<<<<< HEAD
-| :------------- | :------------- | :-------------|
-=======
 | :------------- | :------------- |:------------- |
->>>>>>> f75901a... [Docs] Update Schema.md
 | clientID  | String | Unique ID assigned to the application after registration
 | clientSecret | String | clientSecret provided to the application
 | scope | Array | Scope let you specify exactly what type of access you need. Clients could not grant any additional permission beyond that which the user already has.
