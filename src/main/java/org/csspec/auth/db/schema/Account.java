@@ -2,7 +2,10 @@ package org.csspec.auth.db.schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.csspec.auth.serializers.AccountSerializer;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -10,24 +13,19 @@ import java.util.Collection;
 import java.util.List;
 
 @Document
+@JsonSerialize(using = AccountSerializer.class)
 public class Account {
-    @JsonProperty("name")
     private String name;
 
-    @JsonProperty("id")
     @Id
     private String id;
 
-    @JsonProperty("email")
+    @Indexed(unique = true)
     private String email;
 
-    @JsonIgnore
     private String password;
 
     private UserRole role = UserRole.UNKNOWN;
-
-    @JsonIgnore
-    private String salt;
 
     private List<String> grantedAuthorities = new ArrayList<>();
 
@@ -89,5 +87,9 @@ public class Account {
 
     public void setRole(UserRole role) {
         this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
     }
 }
