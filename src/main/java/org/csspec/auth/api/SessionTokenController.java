@@ -11,6 +11,7 @@ import org.csspec.auth.db.schema.UserRole;
 import org.csspec.auth.exceptions.ErrorResponse;
 import org.csspec.auth.exceptions.InsufficientRoleException;
 import org.csspec.auth.exceptions.InvalidUsernameOrPasswordException;
+import org.csspec.auth.exceptions.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -85,7 +86,7 @@ public class SessionTokenController {
 
     @RequestMapping("/check")
     public ResponseEntity<?> checkToken(HttpServletRequest request) throws Exception {
-        Account account = requestApproval.approveRequest(request, UserRole.STUDENT);
+        Account account = requestApproval.approveRequest(request, UserRole.UNKNOWN);
         System.out.println("Yup person was logged in: " + account.toString());;
         return new ResponseEntity<Object>(account, HttpStatus.ACCEPTED);
     }

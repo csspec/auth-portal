@@ -42,8 +42,7 @@ public class AccountController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public Account createAccount(@RequestBody Map<String, String> map, HttpServletRequest request) throws Exception {
-        requestApproval.approveRequest(request, UserRole.UNKNOWN);
+    public Account createAccount(@RequestBody Map<String, String> map) throws Exception {
         String username = map.get("username");
         if (username == null) {
             throw new BadRequestException("username field is required");
