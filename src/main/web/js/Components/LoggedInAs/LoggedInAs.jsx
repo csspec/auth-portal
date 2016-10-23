@@ -36,7 +36,7 @@ export default class LoggedInAs extends React.Component {
             admin_page = (<a className="btn" href="/admin">Admin Console</a>);
         }
         return (
-            <div className="account" style={{textAlign: 'center'}}>
+            <div className="account" style={{textAlign: 'center', display: 'block', margin: 'auto'}}>
                 <div className="material-icons" style={{fontSize: "10em"}}>
                     account_circle
                 </div>

@@ -160,38 +160,65 @@ export default class RegistrationForm extends React.Component {
 			)
 		}
 		return (
-			<form onSubmit={this.handleSubmit.bind(this)}>
-				<fieldset>
-                    <legend>Registration Form</legend>
-                    <div className="form-group">
-                        <div className="container-fluid">
-                            <input className="form-control disabled" disabled={true} type="email" value={this.state.googleProfile.email}
-                            />
+            <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em'}}>
+                <img src="/images/PEC-Logo.png" style={{ height: '70px' }} />
+                <h1 style={{
+                        fontWeight: '200',
+                        fontSize: '3.2em'
+                    }}
+                >
+                    One account. All of PEC
+                </h1>
+
+                <h4 style={{fontWeight: '300', fontSize: '20px'}}>
+                    Register
+                </h4>
+
+    			<form onSubmit={this.handleSubmit.bind(this)}
+                        style={{
+                            width: '25em',
+                            padding: '3em',
+                            display: 'block',
+                            backgroundColor: '#f7f7f7',
+                            margin: 'auto',
+                            marginTop: '1em',
+                            marginBottom: '1em',
+                            boxShadow: '0 0.3em 0.3em #ccc'
+                        }}
+                >
+    				<fieldset>
+                        <legend>Registration Form</legend>
+                        <div className="form-group">
+                            <div className="container-fluid">
+                                <input className="form-control disabled" disabled={true} type="email" value={this.state.googleProfile.email}
+                                    style={{padding: '1.5em 0.5em'}}
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="container-fluid">
-                            <input className="form-control" type="text" placeholder="Username" value={this.state.username}
-                                   onChange={ this.onChange.bind(this, 'username')} />
+                        <div className="form-group">
+                            <div className="container-fluid">
+                                <input className="form-control" type="text" placeholder="Username" value={this.state.username}
+                                       onChange={ this.onChange.bind(this, 'username')} style={{padding: '1.5em 0.5em'}} />
+                            </div>
                         </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="container-fluid">
-                            <input className="col-xs-10 form-control" type="password" placeholder="Password" value={this.state.password}
-                                   onChange={this.onChange.bind(this, 'password')} />
+                        <div className="form-group">
+                            <div className="container-fluid">
+                                <input className="col-xs-10 form-control" type="password" placeholder="Password" value={this.state.password}
+                                       onChange={this.onChange.bind(this, 'password')} style={{padding: '1.5em 0.5em'}} />
+                            </div>
                         </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="container-fluid">
-                            <input className="col-xs-10 form-control" type="password" placeholder="Retype Password"
-                                   onChange={this.verifyPassword.bind(this)} />
+                        <div className="form-group">
+                            <div className="container-fluid">
+                                <input className="col-xs-10 form-control" type="password" placeholder="Retype Password"
+                                       onChange={this.verifyPassword.bind(this)} style={{padding: '1.5em 0.5em'}} />
+                            </div>
                         </div>
-                    </div>
-                    <button className="btn btn-primary" type="submit">Register</button>
-                    <small style={{display: 'block', margin: '1em'}}>OR</small>
-                    <button className="btn btn-default" onClick={(e) => (e.preventDefault(), window.dispatchEvent(new Event('togglePage')))}>Login</button>
-                </fieldset>
-			</form>
+                        <button className="btn btn-primary" type="submit" style={{padding: '0.5em', width: '100%'}}>Register</button>
+                    </fieldset>
+    			</form>
+
+                <button className="btn btn-default" onClick={(e) => (e.preventDefault(), window.dispatchEvent(new Event('togglePage')))}>Login</button>
+            </div>
 		)
 	}
 }

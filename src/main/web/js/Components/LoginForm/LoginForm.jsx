@@ -99,35 +99,62 @@ export default class LoginForm extends React.Component {
             )
         }
         return (
-            <form className="form-horizontal" onSubmit={this.handleSubmit.bind(this)}>
-                <fieldset>
-                    <legend>Login Form</legend>
-                    <p className="bg-danger" style={{ display: this.state.wrongDetailsFilled ? 'block' : 'none', padding: '5px'}}>
-                        Incorrect username or password
-                    </p>
-                    <p className="bg-danger" style={{ display: this.state.loggedIn && this.state.unsatisfiedRequest ? 'block' : 'none', padding: '5px'}}>
-                        Unknown client
-                    </p>
-                    <p className="bg-danger" style={{ display: this.state.unsatisfiedRequest ? 'block' : 'none', padding: '5px'}}>
-                        Unknown error occurred
-                    </p>
-                    <div className="form-group">
-                        <div className="container-fluid">
-                            <input className="form-control" type="text" placeholder="Username or EmailID" value={this.state.name}
-                                   onChange={ this.onChange.bind(this, 'name')} />
+            <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em'}}>
+                <img src="/images/PEC-Logo.png" style={{ height: '70px' }} />
+                <h1 style={{
+                        fontWeight: '200',
+                        fontSize: '3.2em'
+                    }}
+                >
+                    One account. All of PEC
+                </h1>
+
+                <h4 style={{fontWeight: '300', fontSize: '20px'}}>
+                    Sign in to continue
+                </h4>
+
+                <form className="form-horizontal" onSubmit={this.handleSubmit.bind(this)}
+                    style={{
+                        width: '25em',
+                        padding: '3em',
+                        display: 'block',
+                        backgroundColor: '#f7f7f7',
+                        margin: 'auto',
+                        marginTop: '1em',
+                        marginBottom: '1em',
+                        boxShadow: '0 0.3em 0.3em #ccc'
+                    }}
+                >
+                    <fieldset>
+                        <p className="bg-danger" style={{ display: this.state.wrongDetailsFilled ? 'block' : 'none', padding: '5px'}}>
+                            Incorrect username or password
+                        </p>
+                        <p className="bg-danger" style={{ display: this.state.loggedIn && this.state.unsatisfiedRequest ? 'block' : 'none', padding: '5px'}}>
+                            Unknown client
+                        </p>
+                        <p className="bg-danger" style={{ display: this.state.unsatisfiedRequest ? 'block' : 'none', padding: '5px'}}>
+                            Unknown error occurred
+                        </p>
+                        <div className="form-group">
+                            <div className="container-fluid">
+                                <input className="form-control" type="text" placeholder="Enter your username" value={this.state.name}
+                                       onChange={ this.onChange.bind(this, 'name')}
+                                       style={{padding: '1.5em 0.5em'}} />
+                            </div>
                         </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="container-fluid">
-                            <input className="col-xs-10 form-control" type="password" placeholder="Password" value={this.state.password}
-                                   onChange={this.onChange.bind(this, 'password')} />
+                        <div className="form-group">
+                            <div className="container-fluid">
+                                <input className="col-xs-10 form-control" type="password" placeholder="Enter your password" value={this.state.password}
+                                       onChange={this.onChange.bind(this, 'password')}
+                                       style={{padding: '1.5em 0.5em'}} />
+                            </div>
                         </div>
-                    </div>
-                    <button className="btn btn-primary" type="submit">Submit</button>
-                    <small style={{display: 'block', margin: '1em'}}>OR</small>
-                    <button className="btn btn-default" onClick={(e) => (e.preventDefault(), window.dispatchEvent(new Event('togglePage')))}>Register</button>
-                </fieldset>
-            </form>
+                        <button className="btn btn-primary" type="submit" style={{padding: '0.5em', width: '100%'}}>Submit</button>
+                    </fieldset>
+                </form>
+
+                <button className="btn btn-default" onClick={(e) => (e.preventDefault(), window.dispatchEvent(new Event('togglePage')))}>Register</button>
+            </div>
         );
     }
 }

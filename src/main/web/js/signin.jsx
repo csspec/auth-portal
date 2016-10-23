@@ -6,8 +6,6 @@ import LoginForm from './Components/LoginForm/LoginForm';
 import '../sass/common.sass';
 import RegistrationForm from './Components/RegistrationForm';
 
-const styles = { maxWidth: '400px', display: 'block', margin: 'auto', marginTop: '1em', verticalAlign: 'middle' };
-
 class App extends React.Component {
 	constructor(props) {
 		super(props);
@@ -23,10 +21,8 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="container-fluid">
-                <div className="well" style={styles}>
+            <div className="container">
                     { this.state.value ? <LoginForm /> : <RegistrationForm /> }
-                </div>
             </div>
         )
     }
