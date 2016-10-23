@@ -15,10 +15,10 @@ public class JwtConfiguration {
     private static final JWTSigner signer = new JWTSigner(KEY);
 
     public static String getJwt(String message) {
-        return getJwt(message, null);
+        return getJwt(message, null, null);
     }
 
-    public static String getJwt(String message, String scope) {
+    public static String getJwt(String message, String scope, String userId) {
         final long iat = System.currentTimeMillis();
         // token will expire in 1 hour
         final long exp = iat + 60 * 60 * 60;
@@ -31,6 +31,8 @@ public class JwtConfiguration {
         claims.put("sub", message);
         if (scope != null && scope.length() != 0)
             claims.put("scope", scope);
+        if (userId != null && userId.length() != 0)
+            claims.put("user", userId);
         return signer.sign(claims);
     }
 
