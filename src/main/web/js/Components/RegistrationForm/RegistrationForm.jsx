@@ -2,7 +2,6 @@ import React from 'react';
 import ErrorHandler from '../ErrorHandler';
 import Loading from '../Loading';
 import $ from 'jquery';
-import GoogleLogin from 'react-google-login';
 
 export default class RegistrationForm extends React.Component {
 	constructor(props) {
