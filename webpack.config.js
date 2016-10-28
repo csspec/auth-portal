@@ -12,6 +12,7 @@ const config = {
 	},
 	output: {
 		path: BUILD_DIR,
+	    publicPath: '/assets/',
 		filename: '[name].build.js'
 	},
 	resolve: {
