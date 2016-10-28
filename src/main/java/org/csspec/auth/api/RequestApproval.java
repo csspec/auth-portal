@@ -45,10 +45,6 @@ public class RequestApproval {
     }
 
     public Account approveRequest(HttpServletRequest request, UserRole role) throws Exception {
-        if (role == UserRole.UNKNOWN) {
-            return new Account();
-        }
-
         Cookie[] cookies = request.getCookies();
         String cookiePayload = "";
 
@@ -113,7 +109,7 @@ public class RequestApproval {
         return servicesAuthorized;
     }
 
-    public void approveRequestFromClient(HttpServletRequest request, ClientApplication application) throws Exception {
+    public Account approveRequestFromClient(HttpServletRequest request, ClientApplication application) throws Exception {
         String authorizationHeader = parseAuthorizationHeader(request);
         if (authorizationHeader == null || authorizationHeader.length() == 0) {
             throw new InsufficientAuthorizationException();
@@ -132,6 +128,14 @@ public class RequestApproval {
         String services = (String)claims.get("scope");
         if (services != null)
             validateServices(services, application);
+
+        String userId = (String)claims.get("user");
+        if (userId == null) {
+            // somebody tried to hack!
+            return null;
+        }
+
+        return service.loadUserByUserId(userId);
     }
 
 }

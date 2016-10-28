@@ -1,5 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
+import Button from '../Button';
 
 export default class Home extends React.Component {
     constructor(props) {
@@ -11,11 +12,13 @@ export default class Home extends React.Component {
         this.handleClick = this.handleClick.bind(this);
     }
     handleClick() {
+        if (this.state.disabled)
+            return;
         $.ajax({
             url: '/auth/logout',
             type: 'GET',
             success: (data) => {
-                window.location = '/login'
+                this.props.onSignOut();
             },
             error: (error) => {
                 console.log(error);
@@ -28,7 +31,7 @@ export default class Home extends React.Component {
     render() {
         return (
             <div className="homepage">
-                <button className="btn btn-danger" onClick={this.handleClick} disabled={this.state.disabled}>{this.state.event}</button>
+                <Button onClick={this.handleClick} disabled={this.state.disabled}>{this.state.event}</Button>
             </div>
         )
     }

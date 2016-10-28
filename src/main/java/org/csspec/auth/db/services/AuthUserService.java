@@ -32,4 +32,13 @@ public class AuthUserService {
         account.setGrantedAuthorities(authorities);
         return account;
     }
+
+    public Account loadUserByUserId(String userId) throws UsernameNotFoundException {
+        Account account = userAccountRepository.findUserById(userId);
+        if (account == null) {
+            throw new UsernameNotFoundException(userId);
+        }
+
+        return account;
+    }
 }

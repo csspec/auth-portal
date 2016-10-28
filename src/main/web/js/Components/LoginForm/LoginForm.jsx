@@ -4,6 +4,9 @@ import MainPage from '../MainPage/MainPage';
 import ReactDOM from 'react-dom';
 import LoggedInAs from '../LoggedInAs/LoggedInAs';
 import Loading from '../Loading/Loading';
+import SlideInRight from '../Transitions/SlideInRight';
+import Button from '../Button';
+import ErrorMessage from '../Message/ErrorMessage';
 
 export default class LoginForm extends React.Component {
     constructor(props) {
@@ -49,6 +52,7 @@ export default class LoginForm extends React.Component {
             method: 'GET',
             success: account => {
                 this.setState({ account: account, loggedIn: true, loading: false });
+                this.props.onSignIn(account);
             },
             error: e => {
                 this.setState({ loggedIn: false, loading: false });
@@ -89,45 +93,56 @@ export default class LoginForm extends React.Component {
                             link={this.state.redirect_link}
                             redirect_link={this.state.redirect_link}
                             client_id={this.state.client_id}
+                            onSignOut={() => {
+                                this.setState({loggedIn: false})
+                                this.props.onSignOut()
+                            }}
                 />
             )
         }
 
         if (this.state.loading) {
             return (
-                <Loading />
+                <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em', verticalAlign: 'middle'}}>
+                    <Loading />
+                </div>
             )
         }
         return (
-            <form className="form-horizontal" onSubmit={this.handleSubmit.bind(this)}>
-                <fieldset>
-                    <legend>Login Form</legend>
-                    <p className="bg-danger" style={{ display: this.state.wrongDetailsFilled ? 'block' : 'none', padding: '5px'}}>
-                        Incorrect username or password
-                    </p>
-                    <p className="bg-danger" style={{ display: this.state.loggedIn && this.state.unsatisfiedRequest ? 'block' : 'none', padding: '5px'}}>
-                        Unknown client
-                    </p>
-                    <p className="bg-danger" style={{ display: this.state.unsatisfiedRequest ? 'block' : 'none', padding: '5px'}}>
-                        Unknown error occurred
-                    </p>
-                    <div className="form-group">
-                        <div className="container-fluid">
-                            <input className="form-control" type="text" placeholder="Username or EmailID" value={this.state.name}
-                                   onChange={ this.onChange.bind(this, 'name')} />
+            <SlideInRight>
+                <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em'}}>
+
+                    <form className="form-horizontal" onSubmit={this.handleSubmit.bind(this)}
+                        style={{
+                            maxWidth: '25em',
+                            padding: '3em',
+                            paddingBottom: 0,
+                            display: 'block',
+                            margin: 'auto',
+                            marginTop: '1em',
+                            marginBottom: '1em',
+                        }}
+                    >
+                        <div className="material-icons primary" style={{fontSize: "5em", textAlign: 'center', color: 'gray'}}>
+                            account_circle
                         </div>
-                    </div>
-                    <div className="form-group">
-                        <div className="container-fluid">
-                            <input className="col-xs-10 form-control" type="password" placeholder="Password" value={this.state.password}
-                                   onChange={this.onChange.bind(this, 'password')} />
+                        <ErrorMessage display={this.state.wrongDetailsFilled} message="Incorrect username or password" />
+                        <div className="form-group">
+                            <input className="form-control" type="text" placeholder="Enter your username" value={this.state.name}
+                                   onChange={ this.onChange.bind(this, 'name')}
+                                   style={{padding: '1em 0.5em'}} />
                         </div>
-                    </div>
-                    <button className="btn btn-primary" type="submit">Submit</button>
-                    <small style={{display: 'block', margin: '1em'}}>OR</small>
-                    <button className="btn btn-default" onClick={(e) => (e.preventDefault(), window.dispatchEvent(new Event('togglePage')))}>Register</button>
-                </fieldset>
-            </form>
+                        <div className="form-group">
+                            <input className="col-xs-10 form-control" type="password" placeholder="Enter your password" value={this.state.password}
+                                   onChange={this.onChange.bind(this, 'password')}
+                                   style={{padding: '1em 0.5em'}} />
+                        </div>
+                        <Button className="paper-button" type="submit" style={{padding: '0.5em', width: '100%', display: 'flex', alignItems: 'center', textAlign: 'center'}}>
+                            <span>Continue</span> <span style={{width: '1em'}} className="material-icons">arrow_forward</span>
+                        </Button>
+                    </form>
+                </div>
+            </SlideInRight>
         );
     }
 }

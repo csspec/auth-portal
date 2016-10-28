@@ -36,14 +36,13 @@ public class AccountController {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Account> getAllAccounts(HttpServletRequest request) throws Exception {
-        requestApproval.approveRequest(request, UserRole.ADMIN);
+//        requestApproval.approveRequest(request, UserRole.ADMIN);
         List<Account> list = repository.findAll();
         return list == null ? new ArrayList<>() : list;
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public Account createAccount(@RequestBody Map<String, String> map, HttpServletRequest request) throws Exception {
-        requestApproval.approveRequest(request, UserRole.UNKNOWN);
+    public Account createAccount(@RequestBody Map<String, String> map) throws Exception {
         String username = map.get("username");
         if (username == null) {
             throw new BadRequestException("username field is required");
@@ -55,14 +54,31 @@ public class AccountController {
         password = passwordEncoder.encode(password);
 
         String email = map.get("email");
-        if (email == null || !GoogleAccountVerifier.verifiedEmails.contains(email)) {
+        if (email == null) {
             throw new BadRequestException("email field is missing or incorrect");
         }
-        GoogleAccountVerifier.verifiedEmails.remove(email);
+
+        String role = map.get("role");
+        if (role == null) {
+            role = "UNKNOWN";
+        }
+//        GoogleAccountVerifier.verifiedEmails.remove(email);
         Account account = new Account(username, email, password);
 
+        switch (role) {
+            case "STUDENT":
+                account.setRole(UserRole.STUDENT);
+                break;
+            case "TEACHER":
+                account.setRole(UserRole.TEACHER);
+                break;
+            default:
+                account.setRole(UserRole.UNKNOWN);
+                break;
+        }
+
         // we set the default role of the user to UNKNOWN. Only ADMIN can later change the role from admin console.
-        account.setRole(UserRole.UNKNOWN);
+//        account.setRole(UserRole.UNKNOWN);
         repository.save(account);
         return account;
     }

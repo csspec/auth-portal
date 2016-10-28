@@ -10,23 +10,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class AuthPortal implements CommandLineRunner {
-    @Autowired
     private ClientApplicationRepository repository;
 
-    @Autowired
     private UserAccountRepository userAccountRepository;
+
+    @Autowired
+    public AuthPortal(ClientApplicationRepository repository, UserAccountRepository userAccountRepository) {
+        this.repository = repository;
+        this.userAccountRepository = userAccountRepository;
+    }
 
     public static void main(String []args) {
         SpringApplication.run(AuthPortal.class, args);
     }
 
     public void run(String ...args) {
-        userAccountRepository.deleteAll();
-        repository.deleteAll();
-
+        if (userAccountRepository.findAll().size() < 1) {
+            System.out.println("Please set required environment variables. You may not be able to use application.");
+            System.out.println("--- Check: https://github.com/csspec/auth-portal");
+            return;
+        }
         Configuration configuration = new Configuration();
 
         String adminAccountName = configuration.getAdminAccountId();
@@ -46,7 +53,7 @@ public class AuthPortal implements CommandLineRunner {
         // create a feedback application client
         application = new ClientApplication();
         application.setClientId("feedback");
-        application.setClientSecret("simple");
+        application.setClientSecret("secret");
         repository.save(application);
     }
 }

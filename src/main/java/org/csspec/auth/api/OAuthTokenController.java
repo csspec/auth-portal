@@ -3,7 +3,9 @@ package org.csspec.auth.api;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.csspec.auth.URIQueryParser;
 import org.csspec.auth.config.JwtConfiguration;
+import org.csspec.auth.db.schema.Account;
 import org.csspec.auth.db.schema.ClientApplication;
+import org.csspec.auth.db.schema.UserRole;
 import org.csspec.auth.db.services.ClientApplicationDetailService;
 import org.csspec.auth.db.services.CodeIssuer;
 import org.csspec.auth.exceptions.*;
@@ -156,6 +158,8 @@ public class OAuthTokenController {
         if (!responseType.equals("code") && !responseType.equals("token"))
             throw new InvalidGrantTypeException();
 
+        // user should logged in otherwise access_token will not be issued
+        Account account = requestApproval.approveRequest(request, UserRole.STUDENT);
         boolean state = responseType.equals("code");
         System.out.println(state);
         ClientApplication application = validateAndGetClient(entity, state, state);
@@ -165,7 +169,7 @@ public class OAuthTokenController {
         final StringBuilder scope = new StringBuilder();
         application.getAllowedServices().forEach(name -> scope.append(name + " "));
 
-        String jwt = JwtConfiguration.getJwt(application.getClientId(), scope.toString());
+        String jwt = JwtConfiguration.getJwt(application.getClientId(), scope.toString(), account.getId());
         Map<String, Object> map = new HashMap<>();
         map.put("access_token", jwt);
 
@@ -193,8 +197,9 @@ public class OAuthTokenController {
             throw new InsufficientAuthorizationException();
         }
 
-        requestApproval.approveRequestFromClient(request, application);
-        return new ResponseEntity<>(application, HttpStatus.OK);
+        Account account = requestApproval.approveRequestFromClient(request, application);
+
+        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
 

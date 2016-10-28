@@ -15,6 +15,8 @@ import java.util.List;
 @Document
 @JsonSerialize(using = AccountSerializer.class)
 public class Account {
+    private static Integer userId = 1;
+
     private String name;
 
     @Id
@@ -35,6 +37,7 @@ public class Account {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.id = (userId++).toString();
     }
 
     @Override
