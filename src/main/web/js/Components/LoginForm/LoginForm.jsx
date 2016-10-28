@@ -4,6 +4,9 @@ import MainPage from '../MainPage/MainPage';
 import ReactDOM from 'react-dom';
 import LoggedInAs from '../LoggedInAs/LoggedInAs';
 import Loading from '../Loading/Loading';
+import SlideInRight from '../Transitions/SlideInRight';
+import Button from '../Button';
+import ErrorMessage from '../Message/ErrorMessage';
 
 export default class LoginForm extends React.Component {
     constructor(props) {
@@ -49,6 +52,7 @@ export default class LoginForm extends React.Component {
             method: 'GET',
             success: account => {
                 this.setState({ account: account, loggedIn: true, loading: false });
+                this.props.onSignIn(account);
             },
             error: e => {
                 this.setState({ loggedIn: false, loading: false });
@@ -89,72 +93,56 @@ export default class LoginForm extends React.Component {
                             link={this.state.redirect_link}
                             redirect_link={this.state.redirect_link}
                             client_id={this.state.client_id}
+                            onSignOut={() => {
+                                this.setState({loggedIn: false})
+                                this.props.onSignOut()
+                            }}
                 />
             )
         }
 
         if (this.state.loading) {
             return (
-                <Loading />
+                <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em', verticalAlign: 'middle'}}>
+                    <Loading />
+                </div>
             )
         }
         return (
-            <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em'}}>
-                <img src="/images/PEC-Logo.png" style={{ height: '70px' }} />
-                <h1 style={{
-                        fontWeight: '200',
-                        fontSize: '3.2em'
-                    }}
-                >
-                    One account. All of PEC
-                </h1>
+            <SlideInRight>
+                <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em'}}>
 
-                <h4 style={{fontWeight: '300', fontSize: '20px'}}>
-                    Sign in to continue
-                </h4>
-
-                <form className="form-horizontal" onSubmit={this.handleSubmit.bind(this)}
-                    style={{
-                        width: '25em',
-                        padding: '3em',
-                        display: 'block',
-                        backgroundColor: '#f7f7f7',
-                        margin: 'auto',
-                        marginTop: '1em',
-                        marginBottom: '1em',
-                        boxShadow: '0 0.3em 0.3em #ccc'
-                    }}
-                >
-                    <fieldset>
-                        <p className="bg-danger" style={{ display: this.state.wrongDetailsFilled ? 'block' : 'none', padding: '5px'}}>
-                            Incorrect username or password
-                        </p>
-                        <p className="bg-danger" style={{ display: this.state.loggedIn && this.state.unsatisfiedRequest ? 'block' : 'none', padding: '5px'}}>
-                            Unknown client
-                        </p>
-                        <p className="bg-danger" style={{ display: this.state.unsatisfiedRequest ? 'block' : 'none', padding: '5px'}}>
-                            Unknown error occurred
-                        </p>
+                    <form className="form-horizontal" onSubmit={this.handleSubmit.bind(this)}
+                        style={{
+                            maxWidth: '25em',
+                            padding: '3em',
+                            paddingBottom: 0,
+                            display: 'block',
+                            margin: 'auto',
+                            marginTop: '1em',
+                            marginBottom: '1em',
+                        }}
+                    >
+                        <div className="material-icons primary" style={{fontSize: "5em", textAlign: 'center', color: 'gray'}}>
+                            account_circle
+                        </div>
+                        <ErrorMessage display={this.state.wrongDetailsFilled} message="Incorrect username or password" />
                         <div className="form-group">
-                            <div className="container-fluid">
-                                <input className="form-control" type="text" placeholder="Enter your username" value={this.state.name}
-                                       onChange={ this.onChange.bind(this, 'name')}
-                                       style={{padding: '1.5em 0.5em'}} />
-                            </div>
+                            <input className="form-control" type="text" placeholder="Enter your username" value={this.state.name}
+                                   onChange={ this.onChange.bind(this, 'name')}
+                                   style={{padding: '1em 0.5em'}} />
                         </div>
                         <div className="form-group">
-                            <div className="container-fluid">
-                                <input className="col-xs-10 form-control" type="password" placeholder="Enter your password" value={this.state.password}
-                                       onChange={this.onChange.bind(this, 'password')}
-                                       style={{padding: '1.5em 0.5em'}} />
-                            </div>
+                            <input className="col-xs-10 form-control" type="password" placeholder="Enter your password" value={this.state.password}
+                                   onChange={this.onChange.bind(this, 'password')}
+                                   style={{padding: '1em 0.5em'}} />
                         </div>
-                        <button className="btn btn-primary" type="submit" style={{padding: '0.5em', width: '100%'}}>Submit</button>
-                    </fieldset>
-                </form>
-
-                <button className="btn btn-default" onClick={(e) => (e.preventDefault(), window.dispatchEvent(new Event('togglePage')))}>Register</button>
-            </div>
+                        <Button className="paper-button" type="submit" style={{padding: '0.5em', width: '100%', display: 'flex', alignItems: 'center', textAlign: 'center'}}>
+                            <span>Continue</span> <span style={{width: '1em'}} className="material-icons">arrow_forward</span>
+                        </Button>
+                    </form>
+                </div>
+            </SlideInRight>
         );
     }
 }

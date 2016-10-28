@@ -1,6 +1,8 @@
 import React from 'react';
 import Home from '../Home/Home';
 import $ from 'jquery';
+import Button from '../Button';
+import SlideInRight from '../Transitions/SlideInRight';
 
 export default class LoggedInAs extends React.Component {
     handleClick() {
@@ -32,21 +34,22 @@ export default class LoggedInAs extends React.Component {
     render() {
         let admin_page = '';
         console.log(this.props.account);
-        if (this.props.account.role === 'ADMIN') {
-            admin_page = (<a className="btn" href="/admin">Admin Console</a>);
-        }
         return (
-            <div className="account" style={{textAlign: 'center', display: 'block', margin: 'auto'}}>
-                <div className="material-icons" style={{fontSize: "10em"}}>
-                    account_circle
+            <SlideInRight>
+                <div style={{display: 'flex', alignContent: 'center', width: '100%'}}>
+                    <div className="account" style={{textAlign: 'center', display: 'block', margin: 'auto'}}>
+                        <div className="material-icons" style={{fontSize: "5em", color: 'gray'}}>
+                            account_circle
+                        </div>
+                        <h3>{this.props.account.username}</h3>
+                        <Button onClick={this.handleClick.bind(this)} style={{ marginBottom: '1em' }}>
+                            Continue
+                        </Button>
+                        <Home onSignOut={this.props.onSignOut} />
+                        {admin_page}
+                    </div>
                 </div>
-                <h3>{this.props.account.username}</h3>
-                <button onClick={this.handleClick.bind(this)} className="btn btn-primary" style={{ marginBottom: '1em' }}>
-                    Continue
-                </button>
-                <Home />
-                {admin_page}
-            </div>
+            </SlideInRight>
         )
     }
 }

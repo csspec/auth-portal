@@ -1,7 +1,22 @@
 import React from 'react';
 import ErrorHandler from '../ErrorHandler';
+import SlideInRight from '../Transitions/SlideInRight';
 import Loading from '../Loading';
+import Button from '../Button';
 import $ from 'jquery';
+import './style.sass'
+
+class Instructions extends React.Component {
+    render() {
+        return (
+        <div className="well">
+            <h2>Please read the instructions carefully before proceeding.</h2>
+            <p>If you create an account, we require some basic information at the time of account creation. You will create your own user name and password, and we will ask you for a valid email account. You also have the option to give us more information if you want to, and this may include "User Personal Information."</p>
+            <p>"User Personal Information" is any information about one of our users which could, alone or together with other information, personally identify him or her. Information such as a user name and password, an email address, a real name, and a photograph are examples of “User Personal Information.”</p>
+        </div>
+        );
+    }
+}
 
 export default class RegistrationForm extends React.Component {
 	constructor(props) {
@@ -60,7 +75,6 @@ export default class RegistrationForm extends React.Component {
         console.log("ID Token: " + id_token);
         this.setState({
         	googleProfile: p,
-        	googleSignedIn: true,
         	authenticating: true,
         	username: p.email.match(/^([^@]*)@/)[1],
         	idToken: id_token,
@@ -126,6 +140,12 @@ export default class RegistrationForm extends React.Component {
     	this.setState({ loading: true });
     }
 
+    handleClick() {
+        if (this.state.authenticating)
+            return;
+        this.setState({googleSignedIn: true});
+    }
+
     verifyPassword(e) {
     	this.setState({
     		matchedPassword: e.target.value === this.state.password
@@ -139,7 +159,16 @@ export default class RegistrationForm extends React.Component {
 			)
 		} else if (!this.state.googleSignedIn) {
 			return (
-				<div id="g-signin2" />
+                <SlideInRight>
+                    <div className="container" style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em'}}>
+        				<Instructions />
+                        <div id="g-signin2" />
+                        <Button disabled={this.state.authenticating}
+                                onClick={this.handleClick.bind(this)}>
+                            Agree
+                        </Button>
+                    </div>
+                </SlideInRight>
 			)
 		} else if (this.state.errorMessage !== null) {
 			return (
@@ -159,65 +188,37 @@ export default class RegistrationForm extends React.Component {
 			)
 		}
 		return (
+            <SlideInRight>
             <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em'}}>
-                <img src="/images/PEC-Logo.png" style={{ height: '70px' }} />
-                <h1 style={{
-                        fontWeight: '200',
-                        fontSize: '3.2em'
-                    }}
-                >
-                    One account. All of PEC
-                </h1>
-
-                <h4 style={{fontWeight: '300', fontSize: '20px'}}>
-                    Register
-                </h4>
-
     			<form onSubmit={this.handleSubmit.bind(this)}
                         style={{
-                            width: '25em',
                             padding: '3em',
+                            paddingBottom: 0,
                             display: 'block',
-                            backgroundColor: '#f7f7f7',
                             margin: 'auto',
-                            marginTop: '1em',
-                            marginBottom: '1em',
-                            boxShadow: '0 0.3em 0.3em #ccc'
                         }}
                 >
-    				<fieldset>
-                        <legend>Registration Form</legend>
-                        <div className="form-group">
-                            <div className="container-fluid">
-                                <input className="form-control disabled" disabled={true} type="email" value={this.state.googleProfile.email}
-                                    style={{padding: '1.5em 0.5em'}}
-                                />
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <div className="container-fluid">
-                                <input className="form-control" type="text" placeholder="Username" value={this.state.username}
-                                       onChange={ this.onChange.bind(this, 'username')} style={{padding: '1.5em 0.5em'}} />
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <div className="container-fluid">
-                                <input className="col-xs-10 form-control" type="password" placeholder="Password" value={this.state.password}
-                                       onChange={this.onChange.bind(this, 'password')} style={{padding: '1.5em 0.5em'}} />
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <div className="container-fluid">
-                                <input className="col-xs-10 form-control" type="password" placeholder="Retype Password"
-                                       onChange={this.verifyPassword.bind(this)} style={{padding: '1.5em 0.5em'}} />
-                            </div>
-                        </div>
-                        <button className="btn btn-primary" type="submit" style={{padding: '0.5em', width: '100%'}}>Register</button>
-                    </fieldset>
+                    <div className="form-group">
+                        <input className="form-control disabled" disabled={true} type="email" value={this.state.googleProfile.email}
+                            style={{padding: '1em 0.5em'}}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <input className="form-control" type="text" required placeholder="Username" value={this.state.username}
+                               onChange={ this.onChange.bind(this, 'username')} style={{padding: '1em 0.5em'}} />
+                    </div>
+                    <div className="form-group">
+                        <input className="col-xs-10 form-control" type="password" required placeholder="Password" value={this.state.password}
+                               onChange={this.onChange.bind(this, 'password')} style={{padding: '1em 0.5em'}} />
+                    </div>
+                    <div className="form-group">
+                        <input className="col-xs-10 form-control" type="password" required placeholder="Retype Password"
+                               onChange={this.verifyPassword.bind(this)} style={{padding: '1em 0.5em'}} />
+                    </div>
+                    <Button type="submit">Register</Button>
     			</form>
-
-                <button className="btn btn-default" onClick={(e) => (e.preventDefault(), window.dispatchEvent(new Event('togglePage')))}>Login</button>
             </div>
+            </SlideInRight>
 		)
 	}
 }

@@ -1,0 +1,6 @@
+{
+	"name": "Secondary",
+	"private": true,
+	"main": "./Secondary",
+	"version": "0.0.0"
+}

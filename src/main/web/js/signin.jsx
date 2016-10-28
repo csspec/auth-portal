@@ -2,9 +2,10 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import LoginForm from './Components/LoginForm/LoginForm';
+import MainPane from './Components/MainPane';
+import RegistrationPane from './Components/RegistrationPane';
 import '../sass/common.sass';
-import RegistrationForm from './Components/RegistrationForm';
+import Button from './Components/Button';
 
 class App extends React.Component {
 	constructor(props) {
@@ -21,9 +22,17 @@ class App extends React.Component {
 
     render() {
         return (
-            <div className="container">
-                    { this.state.value ? <LoginForm /> : <RegistrationForm /> }
-            </div>
+        	<div style={{width: '100%', height: '100%'}}>
+	        	{ this.state.value ? <MainPane /> : <RegistrationPane /> }
+	        	<div style={{width: '10em', display: 'block', margin: 'auto'}}>
+	        		<Button onClick={this.handleToggle.bind(this)} style={{
+	        			fontSize: '12px',
+	        			width: '100%',
+	        			textAlign: 'center',
+	        			fontWeight: '900'
+	        		}}>{(this.state.value ? 'New' : 'Old') + ' User?'}</Button>
+	        	</div>
+        	</div>
         )
     }
 }
