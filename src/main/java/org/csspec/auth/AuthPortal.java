@@ -29,11 +29,6 @@ public class AuthPortal implements CommandLineRunner {
     }
 
     public void run(String ...args) {
-        if (userAccountRepository.findAll().size() < 1) {
-            System.out.println("Please set required environment variables. You may not be able to use application.");
-            System.out.println("--- Check: https://github.com/csspec/auth-portal");
-            return;
-        }
         Configuration configuration = new Configuration();
 
         String adminAccountName = configuration.getAdminAccountId();
