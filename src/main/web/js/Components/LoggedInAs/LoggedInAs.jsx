@@ -36,7 +36,7 @@ export default class LoggedInAs extends React.Component {
         console.log(this.props.account);
         return (
             <SlideInRight>
-                <div style={{display: 'flex', alignContent: 'center', width: '100%'}}>
+                <div key="loggedInAs" style={{display: 'flex', alignContent: 'center', width: '100%'}}>
                     <div className="account" style={{textAlign: 'center', display: 'block', margin: 'auto'}}>
                         <div className="material-icons" style={{fontSize: "5em", color: 'gray'}}>
                             account_circle
@@ -50,6 +50,6 @@ export default class LoggedInAs extends React.Component {
                     </div>
                 </div>
             </SlideInRight>
-        )
+        );
     }
 }

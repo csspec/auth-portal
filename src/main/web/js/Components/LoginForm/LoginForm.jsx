@@ -84,21 +84,49 @@ export default class LoginForm extends React.Component {
                 this.setState({ wrongDetailsFilled: true, loading: false });
             }
         });
+        this.setState({loading: true});
+    }
+
+    tryRedirecting() {
+        if (this.state.client_id.length === 0)
+            return;
+
+        // TODO: since grant_type will not be limited to just 'token' and 'code'
+        const request_endpoint = window.response_type === 'code' ? 'issue_code' : 'access_token';
+        $.ajax({
+            url: '/oauth/' + request_endpoint,
+            type: 'GET',
+            beforeSend: (request) => {
+                let header = "client_id=" + this.state.client_id;
+                header += '&response_type=' + window.response_type;
+                request.setRequestHeader('x-auth-token', header);
+            },
+            success: (data) => {
+                // will redirect the user to the actual link
+                console.log(data);
+                window.location = this.state.redirect_link.length === 0 ? '/home' : (this.state.redirect_link
+                                        + "#" + (data.code != null ? data.code : data.access_token));
+            },
+            error: () => {
+                this.setState({ unsatisfiedRequest: true, loading: false });
+            }
+        });
     }
 
     render() {
         if (!this.state.loading && this.state.loggedIn && !this.state.unsatisfiedRequest) {
+            this.tryRedirecting();
             return (
                 <LoggedInAs account={this.state.account}
                             link={this.state.redirect_link}
                             redirect_link={this.state.redirect_link}
                             client_id={this.state.client_id}
                             onSignOut={() => {
-                                this.setState({loggedIn: false})
-                                this.props.onSignOut()
+                                this.setState({loggedIn: false});
+                                this.props.onSignOut();
                             }}
                 />
-            )
+            );
         }
 
         if (this.state.loading) {
@@ -106,11 +134,11 @@ export default class LoginForm extends React.Component {
                 <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em', verticalAlign: 'middle'}}>
                     <Loading />
                 </div>
-            )
+            );
         }
         return (
             <SlideInRight>
-                <div style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em'}}>
+                <div key="loginform" style={{textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', marginTop: '1em'}}>
 
                     <form className="form-horizontal" onSubmit={this.handleSubmit.bind(this)}
                         style={{
