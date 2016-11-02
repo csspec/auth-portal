@@ -5,15 +5,25 @@ package org.csspec.auth.db.schema;
  * where 1 means ADMIN and user with role 10 has lowest access to API
  */
 public enum UserRole {
+    // admin
     ADMIN(1, "ADMIN"),
 
+    // teacher/professor/assistant professor/...
     TEACHER(4, "TEACHER"),
-    // ...
-    // some other roles, needs discussion
-    // ...
 
-    STUDENT(7,"STUDENT"),
+    // class representative
+    CR(5, "CR"),
 
+    // society representative
+    SR(6, "SR"),
+
+    // hostel senior
+    HS(7, "HS"),
+
+    // student
+    STUDENT(9,"STUDENT"),
+
+    // and unknown ...
     UNKNOWN(10, "UNKNOWN");
 
     private int role;
