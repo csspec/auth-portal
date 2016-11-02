@@ -91,7 +91,6 @@ export default class LoginForm extends React.Component {
         if (this.state.client_id.length === 0)
             return;
 
-        // TODO: since grant_type will not be limited to just 'token' and 'code'
         const request_endpoint = window.response_type === 'code' ? 'issue_code' : 'access_token';
         $.ajax({
             url: '/oauth/' + request_endpoint,
@@ -107,14 +106,16 @@ export default class LoginForm extends React.Component {
                 window.location = this.state.redirect_link.length === 0 ? '/home' : (this.state.redirect_link
                                         + "#" + (data.code != null ? data.code : data.access_token));
             },
-            error: () => {
-                this.setState({ unsatisfiedRequest: true, loading: false });
+            error: (error) => {
+                console.log(error);
+                this.setState({ unsatisfiedRequest: true, loading: false, message: JSON.parse(error.responseText).message });
             }
         });
     }
 
     render() {
         if (!this.state.loading && this.state.loggedIn && !this.state.unsatisfiedRequest) {
+            console.log("Trying to redirect to: " + this.state.redirect_link);
             this.tryRedirecting();
             return (
                 <LoggedInAs account={this.state.account}
@@ -154,7 +155,8 @@ export default class LoginForm extends React.Component {
                         <div className="material-icons primary" style={{fontSize: "5em", textAlign: 'center', color: 'gray'}}>
                             account_circle
                         </div>
-                        <ErrorMessage display={this.state.wrongDetailsFilled} message="Incorrect username or password" />
+                        <ErrorMessage display={this.state.wrongDetailsFilled || this.state.unsatisfiedRequest}
+                            message={this.state.wrongDetailsFilled ? "Incorrect username or password" : this.state.message} />
                         <div className="form-group">
                             <input className="form-control" type="text" placeholder="Enter your username" value={this.state.name}
                                    onChange={ this.onChange.bind(this, 'name')}
