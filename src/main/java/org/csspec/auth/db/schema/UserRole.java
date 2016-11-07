@@ -8,6 +8,9 @@ public enum UserRole {
     // admin
     ADMIN(1, "ADMIN"),
 
+    // DAA i.e. Dean Academic Affairs
+    DAA(2, "DAA"),
+
     // teacher/professor/assistant professor/...
     TEACHER(4, "TEACHER"),
 
