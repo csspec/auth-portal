@@ -19,7 +19,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/auth/googlesignin/verify")
 public class GoogleAccountVerifier {
-    private final String CLIENT_ID = "622094430353-kqjl1jb9g9fsdgoakeg7a19dtvthperb.apps.googleusercontent.com";
+    private final String CLIENT_ID = "";
     private GoogleIdTokenVerifier verifier;
 
     public static Set<String> verifiedEmails = new HashSet<>();
