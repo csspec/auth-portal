@@ -44,7 +44,7 @@ public class RequestApproval {
         return service;
     }
 
-    public Account approveRequest(HttpServletRequest request, UserRole role) throws Exception {
+    public Account approveRequest(HttpServletRequest request, UserRole role, boolean checkRole) throws Exception {
         Cookie[] cookies = request.getCookies();
         String cookiePayload = "";
 
@@ -68,10 +68,18 @@ public class RequestApproval {
         if (account == null) {
             throw new InvalidCookieException("Invalid cookie");
         }
-        if (account.getRole().getRole() > role.getRole()) {
+        if (checkRole && account.getRole().getRole() > role.getRole()) {
             throw new InsufficientRoleException(account, role);
         }
         return account;
+    }
+
+    public Account approveRequest(HttpServletRequest request, UserRole role) throws Exception {
+        return approveRequest(request, role, true);
+    }
+
+    public Account approveRequest(HttpServletRequest request) throws Exception {
+        return approveRequest(request, null, false);
     }
 
 

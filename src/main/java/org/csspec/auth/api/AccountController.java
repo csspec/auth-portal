@@ -6,7 +6,13 @@ import org.csspec.auth.db.repositories.UserAccountRepository;
 import org.csspec.auth.db.schema.Account;
 import org.csspec.auth.db.schema.UserRole;
 import org.csspec.auth.exceptions.ErrorResponse;
+import org.csspec.auth.exceptions.UpdateNotAllowedException;
+import org.csspec.auth.exceptions.UsernameNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,12 +32,15 @@ public class AccountController {
 
     private RequestApproval requestApproval;
 
+    private MongoOperations mongo;
+
     public static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
-    AccountController(UserAccountRepository repository, RequestApproval requestApproval) {
+    AccountController(UserAccountRepository repository, RequestApproval requestApproval, MongoOperations mongo) {
         this.repository = repository;
         this.requestApproval = requestApproval;
+        this.mongo = mongo;
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -41,46 +50,129 @@ public class AccountController {
         return list == null ? new ArrayList<>() : list;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
-    public Account createAccount(@RequestBody Map<String, String> map) throws Exception {
-        String username = map.get("username");
-        if (username == null) {
-            throw new BadRequestException("username field is required");
-        }
-        String password = map.get("password");
-        if (password == null) {
-            throw new BadRequestException("password field is required");
-        }
-        password = passwordEncoder.encode(password);
-
-        String email = map.get("email");
-        if (email == null) {
-            throw new BadRequestException("email field is missing or incorrect");
-        }
-
-        String role = map.get("role");
-        if (role == null) {
-            role = "UNKNOWN";
-        }
-//        GoogleAccountVerifier.verifiedEmails.remove(email);
-        Account account = new Account(username, email, password);
-
+    private void setAccountRole(String role, Account account) {
         switch (role) {
             case "STUDENT":
                 account.setRole(UserRole.STUDENT);
                 break;
+
             case "TEACHER":
                 account.setRole(UserRole.TEACHER);
                 break;
+
+            case "ADMIN":
+                account.setRole(UserRole.ADMIN);
+                break;
+
+            case "DAA":
+                account.setRole(UserRole.DAA);
+                break;
+
+            case "CR":
+                account.setRole(UserRole.CR);
+                break;
+
+            case "SR":
+                account.setRole(UserRole.SR);
+                break;
+
+            case "HS":
+                account.setRole(UserRole.HS);
+
             default:
                 account.setRole(UserRole.UNKNOWN);
                 break;
         }
 
-        // we set the default role of the user to UNKNOWN. Only ADMIN can later change the role from admin console.
-//        account.setRole(UserRole.UNKNOWN);
+    }
+
+    private Account createPersistentAccount(Map<String, String> map) throws Exception {
+        String username = map.get("username");
+
+        String password = map.get("password");
+
+        if (password != null)
+            password = passwordEncoder.encode(password);
+        String email = map.get("email");
+        String role = map.get("role");
+
+        return new Account(username, email, password);
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public Account createAccount(@RequestBody Map<String, String> map) throws Exception {
+        Account account = createPersistentAccount(map);
+        setAccountRole(map.get("role") == null ? "UNKNOWN" : map.get("role"), account);
+
+        if (account.getUsername() == null) {
+            throw new BadRequestException("username field is required");
+        }
+
+        if (account.getPassword() == null) {
+            throw new BadRequestException("password field is required");
+        }
+
         repository.save(account);
         return account;
+    }
+
+    private Update getUpdate(Account old, Account change, Account updater) throws UpdateNotAllowedException {
+        Update update = new Update();
+
+        if (change.getRole() != null && !old.getRole().equals(change.getRole())) {
+            if (!updater.getRole().equals(UserRole.ADMIN))
+                throw new UpdateNotAllowedException(updater.getUsername(), updater.getRole(), UserRole.ADMIN);
+            update.set("role", change.getRole());
+        }
+
+        if (change.getEmail() != null && (old.getEmail() == null || !old.getEmail().equals(change.getEmail()))) {
+            if (updater.getId().equals(old.getId())) {
+                update.set("email", change.getEmail());
+            } else if (updater.getRole().equals(UserRole.ADMIN)) {
+                update.set("email", change.getEmail());
+            } else {
+                throw new UpdateNotAllowedException(updater.getUsername(), updater.getRole(), UserRole.ADMIN);
+            }
+        }
+
+        if (change.getPassword() != null && !old.getPassword().equals(change.getPassword())) {
+            System.out.println("Updating password to: " + change.getPassword());
+            String password = change.getPassword();
+            if (updater.getId().equals(old.getId())) {
+                update.set("password", password);
+            } else if (updater.getRole().equals(UserRole.ADMIN)) {
+                update.set("password", password);
+            } else {
+                throw new UpdateNotAllowedException(updater.getUsername(), updater.getRole(), UserRole.ADMIN);
+            }
+        }
+        return update;
+    }
+
+    @RequestMapping(method = RequestMethod.PUT)
+    public Map putChanges(@RequestBody Map<String, String> map, HttpServletRequest request) throws Exception {
+        Account changing = requestApproval.approveRequest(request);
+        Account account = createPersistentAccount(map);
+
+        String userId = map.get("userid");
+        if (userId == null) {
+            throw new BadRequestException("userid was not specified");
+        }
+        account.setId(userId);
+        setAccountRole(map.get("role") != null ? map.get("role") : changing.getRole().getValue(), account);
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("id").is(account.getId()));
+
+        Account oldAccount = mongo.findOne(query, Account.class);
+        if (oldAccount == null)
+            throw new UsernameNotFoundException(account.getId());
+
+        Update update = getUpdate(oldAccount, account, changing);
+
+        if (mongo.updateFirst(query, update, Account.class) == null)
+            throw new InternalError("Unable to update the document");
+        return Collections.singletonMap("status", "updated");
     }
 
     @RequestMapping(value = "/{accountId}", method = RequestMethod.GET)
@@ -105,5 +197,17 @@ public class AccountController {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse duplicateKeyExceptionHandler(DuplicateKeyException exception) {
         return new ErrorResponse(HttpStatus.CONFLICT.value(), "email id already registered");
+    }
+
+    @ExceptionHandler(UpdateNotAllowedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse updateNotAllowedExceptionHandler(UpdateNotAllowedException exception) {
+        return new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.toString());
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse usernameNotFoundExceptionHandler(UsernameNotFoundException exception) {
+        return new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.toString());
     }
 }

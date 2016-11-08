@@ -2,9 +2,6 @@ package org.csspec.auth.exceptions;
 
 import lombok.Data;
 
-/**
- * Created by Prince on 10/6/2016.
- */
 public @Data
 class UsernameNotFoundException extends Exception {
 
@@ -12,5 +9,10 @@ class UsernameNotFoundException extends Exception {
 
     public UsernameNotFoundException(String username) {
         this.username = username;
+    }
+
+    @Override
+    public String toString() {
+        return username + " does not exist.";
     }
 }
